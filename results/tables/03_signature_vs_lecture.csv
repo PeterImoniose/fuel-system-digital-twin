@@ -1,0 +1,11 @@
+fault,level,Q,P1,P2,P3,P4,P5
+F1,low (20 %),- ok,- x,- ok,- ok,- ok,- ok
+F1,high (80 %),- ok,+ ok,- ok,- ok,- ok,- ok
+F2,low (30 %),- ok,- ok,- ok,- ok,- ok,- ok
+F2,high (100 %),- ok,- ok,- ok,- ok,- ok,- ok
+F3,low (20 %),- ok,0 ~,0 ~,0 ~,- ok,- ok
+F3,high (80 %),- ok,+ ok,+ ok,+ ok,- ok,- ok
+F4,low (30 %),- ok,0 ~,0 ~,- ok,- ok,- ok
+F4,high (90 %),- ok,- ok,- ok,- ok,- ok,- ok
+F5,low (20 %),- ok,- x,0 ~,- x,- x,- ok
+F5,high (80 %),- ok,+ ok,+ ok,+ ok,+ ok,- ok

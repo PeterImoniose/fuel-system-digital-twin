@@ -1,0 +1,9 @@
+features,detector,healthy windows flagged (held-out runs),physically empty settings flagged,mild settings (10-20 %) flagged,clear faults (>= 40 %) flagged
+raw readings,Mahalanobis (shrinkage),0.07777777777777778,1.0,1.0,1.0
+raw readings,Isolation Forest,0.058333333333333334,1.0,0.775,1.0
+raw readings,One-class SVM,0.225,1.0,1.0,1.0
+raw readings,Autoencoder,0.07222222222222222,1.0,1.0,1.0
+physics residuals,Mahalanobis (shrinkage),0.07222222222222222,1.0,1.0,1.0
+physics residuals,Isolation Forest,0.022222222222222223,0.65,0.7055555555555556,0.8976190476190476
+physics residuals,One-class SVM,0.14722222222222223,1.0,1.0,1.0
+physics residuals,Autoencoder,0.075,1.0,1.0,1.0

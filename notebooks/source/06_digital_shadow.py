@@ -1,31 +1,18 @@
 # %% [markdown]
-# # 06 - Task 5: from digital shadow to digital twin
+# # 06 - The digital shadow: putting it together and replaying the day
 #
-# **Brief:** *appraisal on how the knowledge developed as part of the construction of a digital shadow
-# can evolve into the design specifications of a digital twin of the fuel system.*
+# Everything from notebooks 02-05 is assembled into a running health assessment
+# (`fueltwin.twin.DigitalShadow`), and the whole test day is replayed through it as if it were a live
+# data stream. Then:
 #
-# This notebook does that in two halves:
+# * a physics model of the rig is used to train a classifier **without a single real fault label**,
+#   and tested on the real recordings;
+# * the model answers what-if questions that cannot safely be tested on the rig;
+# * what the shadow could not do becomes the list of next steps.
 #
-# * **Build and test the shadow.** Everything learned in notebooks 02-05 is assembled into a running
-#   assessment (`fueltwin.twin.DigitalShadow`) and the whole test day is replayed through it as if it
-#   were a live data stream. A physics model of the rig is used to train a classifier without a single
-#   real fault label, and is then tested on the real recordings.
-# * **Turn the lessons into a specification.** What the shadow could not do, and why, becomes the
-#   requirements for a digital twin. The full specification is in `docs/task5_digital_twin_design.md`;
-#   the key tables are reproduced at the end.
-#
-# ## Where the current system sits
-#
-# Kritzinger et al. (2018) separate three levels by how data moves between the physical and the
-# digital object: a **digital model** (manual data exchange both ways), a **digital shadow** (automatic
-# flow from asset to model only) and a **digital twin** (automatic flow both ways, the digital object
-# can act on the physical one). DNV-RP-A204 (DNV, 2020) grades each function of a twin by capability:
-# 0 standalone, 1 descriptive, 2 diagnostic, 3 predictive, 4 prescriptive, 5 autonomous.
-#
-# | | Before this project | This project | Digital twin target |
-# |---|---|---|---|
-# | Integration (Kritzinger) | digital model: files exported and analysed by hand | digital shadow, replayed offline | digital twin: live, with feedback to the speed drive and valves |
-# | Capability (DNV) | 1 descriptive | 2 diagnostic, first steps of 4 (what-if) | 3 predictive and 4 prescriptive |
+# A *digital shadow* follows the asset automatically but does not act on it; a *digital twin* also
+# feeds decisions back (for example, a speed set-point). This project builds the shadow and tests what
+# the step to a twin would need.
 
 # %%
 from collections import deque
@@ -47,9 +34,6 @@ FAULTS = list(config.FAULTS)
 
 # %% [markdown]
 # ## 1. Architecture of the shadow
-#
-# Mapped onto the five-dimension model of Tao et al. (2019): physical entity (PE), virtual entity
-# (VE), services (Ss), twin data (DD) and connections (CN).
 
 # %%
 fig, ax = plt.subplots(figsize=(11, 4.6))
@@ -72,10 +56,10 @@ def arrow(x0, y0, x1, y1, text="", dashed=False):
         ax.text((x0 + x1) / 2, (y0 + y1) / 2 + 0.08, text, fontsize=7.5, ha="center", va="bottom", color=pl.INK_2)
 
 
-node(0.1, 2.5, 2.0, 1.9, "Fuel-system rig", "pump, filter, valves,\nnozzle, 5 DPVs\nP1-P5, Q, speed\n1 kHz DAQ", "PE")
-node(2.7, 2.5, 2.2, 1.9, "Data layer", "1 s windows\nunit / reference checks\nP5 clipping flag\nspeed in range?", "DD + CN")
-node(5.5, 2.5, 2.6, 1.9, "Virtual entity", "pump model (Task 4)\nsection laws (Task 3)\nhealthy baseline (Task 2)\nnetwork simulator", "VE")
-node(8.7, 2.5, 2.2, 1.9, "Services", "health indicators\ndiagnosis + severity\nquality indicator\nwhat-if analysis", "Ss")
+node(0.1, 2.5, 2.0, 1.9, "Fuel-system rig", "pump, filter, valves,\nnozzle, 5 DPVs\nP1-P5, Q, speed\n1 kHz DAQ", "asset")
+node(2.7, 2.5, 2.2, 1.9, "Data layer", "1 s windows\nunit / reference checks\nP5 clipping flag\nspeed in range?", "data")
+node(5.5, 2.5, 2.6, 1.9, "Models", "pump model (nb 05)\nsection laws (nb 03)\nhealthy baseline (nb 02)\nnetwork simulator", "models")
+node(8.7, 2.5, 2.2, 1.9, "Outputs", "health indicators\ndiagnosis + severity\nquality indicator\nwhat-if analysis", "outputs")
 node(2.7, 0.2, 5.4, 1.6, "Not yet built (digital twin)", "fluid temperature and P_atm inputs, live recalibration of pump slip,\n"
      "prognosis (time to filter change), feedback: speed set-point / isolate a leak", "target",
      fc="#f0efec", ec=pl.MUTED)
@@ -227,9 +211,9 @@ pd.Series(headline, name="value").to_frame()
 #
 # ## 4. Can a physics model replace fault data? (sim-to-real)
 #
-# Ritto and Rochinha (2021) propose building a twin's classifier from a physics-based model, so it can
-# recognise damage that has never been observed. Here the classifier inside the shadow was trained on
-# synthetic windows only. Scored on the real recordings:
+# Real fault data is rare and expensive. If a physics model can generate it instead, a classifier can
+# be built for faults that have never been observed. Here the classifier inside the shadow was trained
+# on synthetic windows only. Scored on the real recordings:
 
 # %%
 def sim_to_real(seed: int, n_per_class: int = 400):
@@ -302,13 +286,13 @@ plt.show()
 # windows (mean 19 %) are called faulty, mostly a clogged injector, and residual features make this
 # worse (mean 47 %). The simulated noise and drift do not reproduce the real healthy scatter, so the
 # classifier's healthy region ends up in the wrong place. Matching simulated noise and drift to reality
-# is the model-qualification step DNV-RP-A204 requires before a functional element is trusted, and it
-# is the main piece of work left on this part of the twin.
+# is the qualification step any model needs before it is trusted on its own, and it is the main piece
+# of work left on this part of the system.
 #
 # That is why the classifier is only a **second opinion** inside the shadow: disagreement lowers the
 # quality indicator but never raises an alarm on its own, and the replay above has no false alarms.
 #
-# ## 5. Using the virtual entity: what-if questions
+# ## 5. What-if questions with the rig model
 #
 # A twin earns its keep by answering questions that cannot safely be tested on the asset. Two
 # examples with the calibrated network model:
@@ -355,8 +339,7 @@ print(f"Flow drops 5 % at a filter resistance ratio of about {lim_q:.0f}x; "
 # falls by 5 %, and suction pressure only approaches cavitation territory (0.3 bar abs) at about 26
 # times. The filter residual sees the clog from about 1.4 times (the 20 % setting, notebook 03), much
 # earlier than either. So a twin can plan the filter change on the resistance ratio and keep suction
-# pressure as a hard safety limit, instead of waiting for lost flow. (Bardakis, 2019, found flow even
-# less sensitive on the later rig at 1140 rpm.)
+# pressure as a hard safety limit, instead of waiting for lost flow.
 #
 # **Closing the loop: can pump speed compensate?** A digital twin, unlike a shadow, may act on the
 # asset. One candidate action for a clogging filter or a worn pump is to raise the pump speed to hold
@@ -387,15 +370,14 @@ pd.DataFrame(act)
 # suction pressure, which is physically impossible: the pump would cavitate long before, so speed
 # cannot compensate a badly clogged filter. A prescriptive twin therefore needs
 # the suction limit as a constraint, and for a leak, compensating is the wrong action: fuel leaks are a
-# safety issue (Bardakis, 2019), so the right response is to isolate. This is the kind of reasoning that
+# safety issue, so the right response is to isolate. This is the kind of reasoning that
 # turns diagnosis into decision support, and why the twin's actions must be designed per fault.
 #
-# ## 6. From what the shadow learned to the twin's specification
+# ## 6. Next steps: what the shadow learned
 #
-# Each limit met in this project becomes a requirement. Full text and justification:
-# `docs/task5_digital_twin_design.md`.
+# Each limit met in this project points to a concrete next step for the rig and its data.
 #
-# | Lesson from the shadow | Evidence | Requirement for the twin |
+# | Lesson from the shadow | Evidence | Next step |
 # |---|---|---|
 # | Healthy behaviour drifts by 1-3.5 % over a day; drift mimics pump and leak faults | notebooks 03, 04 (F5 10 % false isolation) | measure fluid temperature at pump inlet; healthy reference recorded across temperatures; slip k_s modelled as a function of temperature |
 # | P3-P5 are gauge, P1-P2 absolute, atmosphere not logged | notebook 01 | log atmospheric pressure, or make all transducers the same reference |
@@ -405,4 +387,4 @@ pd.DataFrame(act)
 # | Labels tied to time of day inflate every classifier score | notebook 04 | randomised, repeated fault-injection schedule; healthy runs interleaved with faults |
 # | Physics-trained classifier generalises to unseen real faults | section 4 | keep the network model as the twin's virtual entity; qualify its noise and drift against data |
 # | Mildest settings are below the detection limit | notebooks 03, 04 | state detection limits per fault in physical units; use trend over hours, not single windows, for incipient faults |
-# | Wrong answers must not look confident | section 3 | quality indicator per function (DNV-RP-A204), shown with every result |
+# | Wrong answers must not look confident | section 3 | a quality indicator shown with every result |

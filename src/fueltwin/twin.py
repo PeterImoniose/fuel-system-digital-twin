@@ -1,4 +1,4 @@
-"""The digital shadow: a running health assessment of the fuel rig (Task 5).
+"""The digital shadow: a running health assessment of the fuel rig.
 
 For every 1 s window the shadow produces:
 
@@ -6,13 +6,13 @@ For every 1 s window the shadow produces:
 * a diagnosis from the physics rules, and a second opinion from a classifier
   trained only on simulated faults (``simulate.py``);
 * a severity in physical units (resistance ratio or lost delivery);
-* a quality indicator (green / yellow / red, after DNV-RP-A204 section 2.5)
+* a quality indicator (green / yellow / red)
   saying how far the result can be trusted, with the reasons;
 * an alarm state that only changes when a diagnosis persists, so single noisy
   windows do not raise or clear alarms.
 
-In Kritzinger et al.'s (2018) terms this is a digital shadow: data flows
-automatically from the asset to the model, but nothing flows back.
+It is a digital shadow: data flows automatically from the asset to the
+model, but nothing flows back.
 """
 
 from __future__ import annotations

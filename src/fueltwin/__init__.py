@@ -1,3 +1,3 @@
-"""Digital shadow of the GCU fuel-system testbed."""
+"""Digital shadow of a laboratory fuel-system testbed."""
 
 __version__ = "0.1.0"

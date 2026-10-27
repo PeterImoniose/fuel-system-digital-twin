@@ -7,12 +7,12 @@
 #
 # **Two data sources**
 #
-# | Source | Used for | Rig | Logging |
+# | Source | Used in | Rig | Logging |
 # |---|---|---|---|
-# | 47 recordings dated 30 May 2014: 6 healthy + 41 faulty | Tasks 2 and 3 | earlier UAV fuel-system demonstrator (Lab 1 schematic) | NI DAQ, 1 kHz, 60 s per file |
-# | 22 pump tests: 16 "initial" (2021-07-28) and 6 "final" (2023-02-02) | Task 4 | PLC-based testbed (Bardakis, 2019) | PLC, 200 ms |
+# | 47 recordings dated 30 May 2014: 6 healthy + 41 faulty | notebooks 02-04, 06-08 | UAV fuel-system demonstrator | NI DAQ, 1 kHz, 60 s per file |
+# | 22 pump tests: 16 "initial" (2021-07-28) and 6 "final" (2023-02-02) | notebooks 05, 07 | later PLC-based version of the testbed | PLC, 200 ms |
 #
-# Raw files are read in place from the coursework folder; nothing is copied into the repository.
+# Raw files are read in place from the data folder; nothing is copied into the repository.
 
 # %%
 import matplotlib.pyplot as plt
@@ -29,7 +29,7 @@ pd.set_option("display.width", 160)
 # ## 1. The rig and where each fault is injected
 #
 # Faults are *emulated*: a direct proportional valve (DPV) in series or in parallel with a component
-# changes the hydraulics the way the real failure would (Lab 1; Niculita et al., 2014). The flow meter
+# changes the hydraulics the way the real failure would (rig documentation). The flow meter
 # sits at the **end** of the line, so it measures what reaches the sump, not what the pump produces.
 # This one detail decides which faults can be told apart (notebook 03).
 
@@ -173,7 +173,7 @@ p5[p5["share <= 1 mbar"] > 0.01]
 #
 # Column 6 responds strongly to faults (it falls with the pump and leak faults and rises sharply with
 # the clogged injector), so it is a live measurement of something. Without documentation of what it is
-# it cannot be interpreted, so it is excluded from every model, as the brief instructs.
+# it cannot be interpreted, so it is excluded from every model, as the rig documentation instructs.
 
 # %%
 ch6 = data.groupby("run_id", observed=True)["ch6_ignored"].mean().reindex(cat["run_id"])
@@ -190,7 +190,7 @@ pl.save(fig, "01_ignored_channel")
 plt.show()
 
 # %% [markdown]
-# ## 8. Pump test campaigns (Task 4 data)
+# ## 8. Pump test campaigns
 #
 # Facts checked against the Pump Datasets Specification:
 # * the time column is all zeros; time is rebuilt from the 200 ms PLC period;

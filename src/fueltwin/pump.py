@@ -1,4 +1,4 @@
-"""Loading the Oberdorfer N999R pump test campaigns (Task 4).
+"""Loading the Oberdorfer N999R pump test campaigns.
 
 Two campaigns are provided, both logged by the new PLC-based testbed every
 200 ms while the two main-line valves (DPV3, DPV4) close together and load the
@@ -78,7 +78,7 @@ def load_all() -> pd.DataFrame:
 
 
 def test_summary(df: pd.DataFrame) -> pd.DataFrame:
-    """Per-test facts asked for in the brief: speed, duration, valve end point."""
+    """Per-test facts: speed, duration, valve end point, pressure and flow range."""
     g = df.groupby("test", sort=False)
     out = g.agg(
         campaign=("campaign", "first"),

@@ -137,12 +137,12 @@ def run_direction(w: pd.DataFrame, cols: list[str], split: str) -> pd.Series:
     return pred
 
 
-# --- the module's own diagnostic tree (Diagnostic Trees.pdf, page 9) -------------
-def tutor_tree(w: pd.DataFrame, base_mean: pd.Series, base_sd: pd.Series, k: float = 4.0) -> pd.Series:
-    """Re-implementation of the lecture's diagnostic logic on this data.
+# --- the rig's expert diagnostic tree --------------------------------------------
+def expert_tree(w: pd.DataFrame, base_mean: pd.Series, base_sd: pd.Series, k: float = 4.0) -> pd.Series:
+    """Re-implementation of the rig's expert diagnostic logic on this data.
 
     Direction tests ("P3 up/down") use the healthy envelope mean +/- k sd. The
-    lecture's absolute thresholds on P3 (1.1, 1.15, 1.2 bar) belong to a
+    expert tree's absolute thresholds on P3 (1.1, 1.15, 1.2 bar) belong to a
     different rig configuration, so they are applied as written and reported.
     Returns a fault code, "HC", or an ambiguity group such as "F1/F2/F4".
     """

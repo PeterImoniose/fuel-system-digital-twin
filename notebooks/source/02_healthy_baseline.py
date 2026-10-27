@@ -1,8 +1,5 @@
 # %% [markdown]
-# # 02 - Task 2: characterising the healthy system
-#
-# **Brief:** *analysis and characterisation of the healthy conditions of the fuel system, running at a
-# specific operating point.*
+# # 02 - Healthy baseline: what does normal look like?
 #
 # The healthy reference is what every later step is measured against, so this notebook answers four
 # questions:
@@ -215,8 +212,8 @@ pd.DataFrame(bands).T.round(1)
 # %% [markdown]
 # * In the pressure signals around the pump (P2, P3) about three quarters of the fluctuation sits at
 #   **exactly the shaft frequency and its second harmonic** (43 % for P5, where electrical noise above
-#   60 Hz takes the rest). This is flow ripple from the gear pump (Manring and Kasaragadda, 2003; Zongbin et al.,
-#   2018) plus any once-per-revolution unbalance or misalignment. The "noise" in the healthy data is
+#   60 Hz takes the rest). This is flow ripple from the gear pump plus any once-per-revolution unbalance or
+#   misalignment. The "noise" in the healthy data is
 #   largely deterministic pump behaviour.
 # * A peak at **80 Hz = 12 x shaft speed** appears on the pressure signals, consistent with the gear-mesh
 #   frequency of a 12-tooth gear (the tooth count is not documented, so this is an inference).
@@ -286,7 +283,7 @@ print(f"2021 pump line at the 2014 pressure rise: {expected:.3f} L/min; measured
 # few percent of the 2021 pump line. Notebook 03 shows the 2014 pump curve is nevertheless steeper (more
 # internal leakage) than in 2021, so agreement at one point does not mean the same pump characteristic.
 #
-# ## Summary for Task 2
+# ## Summary
 #
 # | Quantity | Healthy value (mean of 6 runs) | Between-run sd |
 # |---|---|---|

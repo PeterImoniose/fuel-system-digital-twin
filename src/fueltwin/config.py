@@ -1,7 +1,7 @@
 """Paths, physical constants and rig metadata used across the project.
 
 The raw data is not stored in this repository. By default it is expected in a
-sibling folder called ``Digital twin`` (the coursework resource pack); set the
+sibling folder called ``Digital twin`` (the rig's data pack); set the
 ``FUELTWIN_DATA`` environment variable to point somewhere else.
 """
 
@@ -29,7 +29,7 @@ GPM_TO_LPM = 3.785411784
 PSI_TO_BAR = 0.0689475729
 
 # Burkert-style direct proportional valve command range in the PLC logs
-# (Task 4 files): 20000 = fully open, 4000 = fully closed.
+# (pump-test files): 20000 = fully open, 4000 = fully closed.
 DPV_CMD_OPEN = 20000.0
 DPV_CMD_CLOSED = 4000.0
 

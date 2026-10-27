@@ -101,8 +101,7 @@ plt.show()
 # along known laws, but not the drift in the laws themselves. A one-class model is only as good as the
 # variety of healthy behaviour it has seen. For the twin this means **the healthy reference must be
 # recorded across the conditions the rig meets in service** (temperatures, tank levels, times of day)
-# before unsupervised detection is worth deploying, which is requirement R1 and the data-collection
-# phase of the roadmap in `docs/task5_digital_twin_design.md`.
+# before unsupervised detection is worth deploying (see the next steps in notebook 06).
 #
 # The alternative that does not need a day-wide healthy reference is to watch for **changes relative to
 # the recent past**, which is the next section.
@@ -117,8 +116,8 @@ plt.show()
 # reference window in the example below), with covariance
 # pooled from the healthy runs. Two detectors:
 # * **CUSUM** on T^2 (allowance k, threshold h);
-# * **Bayesian online change-point detection** (Adams and MacKay, 2007) on log(1 + T^2), alarm when the
-#   posterior probability of a change in the last 5 s exceeds a threshold. Niculita, Skaf and Jennions
+# * **Bayesian online change-point detection** on log(1 + T^2), alarm when the
+#   posterior probability of a change in the last 5 s exceeds a threshold. Bayesian change-point detection
 #   (2014) used Bayesian change-point detection on this same UAV fuel rig.
 #
 # Both are tuned **on the healthy streams only**: the most sensitive setting that raises no alarm on
@@ -271,12 +270,12 @@ grad
 # %% [markdown]
 # For slow degradation the useful number is not the delay but **how much degradation has accumulated
 # when the alarm fires**, and that is almost the same whatever the ramp speed: the detector fires once
-# the change in the readings exceeds a fixed multiple of the healthy noise. Blockages are caught at a
-# 1-3 % of extra resistance for the valve and nozzle (about 10 % for the noisier filter) and bypass or
-# leak flow at under 1 % of the pump's output, while the delivered flow has fallen by less than 1 %. The caveat from section 1 applies with more force here: over
-# 6 hours the real rig drifts by about as much (notebook 03), and this simulation adds noise but no
-# drift. Over long horizons a change detector cannot tell slow degradation from slow drift without an
-# extra measurement (temperature), which is the twin's requirement R1.
+# the change in the readings exceeds a fixed multiple of the healthy noise. Blockages are caught at
+# 1-3 % of extra resistance for the valve and nozzle (about 10 % for the noisier filter), and bypass or
+# leak flow at under 1 % of the pump's output, while the delivered flow has fallen by less than 1 %.
+# The caveat from section 1 applies with more force here: over 6 hours the real rig drifts by about as
+# much (notebook 03), and this simulation adds noise but no drift. Over long horizons a change detector
+# cannot tell slow degradation from slow drift without an extra measurement (fluid temperature).
 #
 # ## 3. Kalman tracking of the health indicators
 #

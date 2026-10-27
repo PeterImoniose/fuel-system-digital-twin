@@ -1,0 +1,22 @@
+# Raw coursework data is not redistributed; it is read from ../Digital twin (see DATASET.md)
+data/
+*.lvm
+
+# Large intermediate outputs (rebuilt by the notebooks)
+results/tables/*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+venv/
+
+# Tools / OS
+.claude/
+.streamlit/
+.vscode/
+Thumbs.db
+.DS_Store

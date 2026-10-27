@@ -1,0 +1,12 @@
+severity,HC,F1,F2,F3,F4,F5
+0.0,HC,,,,,
+10.0,,"detected, not isolated",,F1/F2/F4,,F1/F2/F4
+20.0,,F1/F2/F4,F1/F2/F4,"detected, not isolated",F1/F2/F4,F1/F2/F4
+30.0,,F1/F2/F4,F1/F2/F4,F3,F1/F2/F4,"detected, not isolated"
+40.0,,F1/F2/F4,F1,F3,F1/F2/F4,F5
+50.0,,F1/F2/F4,F2,F3,F1/F2/F4,F5
+60.0,,F1/F2/F4,F1/F2/F4,F3,F1,F5
+70.0,,F1/F2/F4,F1/F2/F4,F3,F1,F5
+80.0,,F1/F2/F4,F1/F2/F4,F3,F1,F5
+90.0,,,F1/F2/F4,,F1,
+100.0,,,F1/F2/F4,,,

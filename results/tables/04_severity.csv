@@ -1,0 +1,6 @@
+fault,physical severity,Spearman rho (windows),"mean abs error, valve travel (pct points, leave one recording out)"
+F1,resistance ratio,0.9921588947741593,4.493585673302155
+F2,lost delivery,0.993805093093823,4.515230571509833
+F3,resistance ratio,0.9921588947741593,4.608328165270546
+F4,lost delivery,0.9702290334888732,6.363163841885778
+F5,resistance ratio,0.9921588947741593,4.625317571992462

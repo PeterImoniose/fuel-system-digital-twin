@@ -1,0 +1,17 @@
+{
+  "model": "Q[L/min] = D[mL/rev] * n[rpm] / 1000 - k_s[L/min/bar] * dP[bar]",
+  "fitted_on": "final campaign 2023-02-02, 700-950 rpm, dP < 3.3 bar",
+  "D_mL_rev": 2.1097974030994675,
+  "k_s_Lpm_bar": 0.20830038815477434,
+  "valid_range": {
+    "rpm": [
+      700,
+      950
+    ],
+    "dP_bar": [
+      1.1,
+      3.3
+    ]
+  },
+  "relief_valve_setting_bar": 3.447378645
+}

@@ -1,7 +1,7 @@
 # %% [markdown]
 # # 04 - Fault diagnosis: how well can the faults really be told apart?
 #
-# Tasks 2 and 3 described the faults. This notebook asks the data-science question underneath the
+# Notebooks 02 and 03 described the faults. This notebook asks the data-science question underneath the
 # digital twin: **given a few seconds of sensor data, can a model say whether the system is healthy,
 # and if not, which component is failing and how badly?** And, as important, **how much of any good
 # score is real?**
@@ -103,10 +103,10 @@ R, _ = hy.lofo_residuals(w)
 E = R[[c for c in R if c.startswith("e_")]].rename(columns=lambda c: c.replace("e_", "r_"))
 phys_pred = hy.isolate(E)
 base = baseline.HealthyBaseline.fit(w, ["P1", "P2", "P3", "P4", "P5", "Q"])
-tree_pred = dg.tutor_tree(w, base.mean, base.sd_total)
+tree_pred = dg.expert_tree(w, base.mean, base.sd_total)
 _, inc_test = next(dg.split_incipient(w))
-for name, p in [("physics residual rules (leave-one-fault-out)", phys_pred), ("lecture diagnostic tree", tree_pred)]:
-    fam = "physics" if "physics" in name else "lecture"
+for name, p in [("physics residual rules (leave-one-fault-out)", phys_pred), ("expert diagnostic tree", tree_pred)]:
+    fam = "physics" if "physics" in name else "expert rules"
     for split, idx in [("loro", w.index), ("incipient", inc_test)]:
         results.append({"split": split, "family": fam, "method": name,
                         **dg.score(y.loc[idx], p.loc[idx], w.loc[idx, "run_id"])})
@@ -125,7 +125,7 @@ plot_df = res.copy()
 plot_df["label"] = plot_df["method"].str.replace(" | ", ", ", regex=False)
 methods = (plot_df[plot_df["split"] == "loro"].sort_values("macro_f1")["label"].tolist())
 fam_col = {"machine learning": pl.SERIES[0], "signature direction": pl.SERIES[2], "physics": pl.SERIES[1],
-           "lecture": pl.INK_2}
+           "expert rules": pl.INK_2}
 fig, axes = plt.subplots(1, 3, figsize=(13, 6.5), sharey=True)
 for ax, split in zip(axes, order):
     d = plot_df[plot_df["split"] == split].set_index("label").reindex(methods)
@@ -209,7 +209,7 @@ per_run = pd.DataFrame({
     "severity": w.groupby("run_id", sort=False)["severity"].first(),
     "physics rules": phys_pred.groupby(w["run_id"], sort=False).agg(lambda s: s.value_counts().index[0]),
     f"{mn} | {fs}": p_best.groupby(w["run_id"], sort=False).agg(lambda s: s.value_counts().index[0]),
-    "lecture tree": tree_pred.groupby(w["run_id"], sort=False).agg(lambda s: s.value_counts().index[0]),
+    "expert tree": tree_pred.groupby(w["run_id"], sort=False).agg(lambda s: s.value_counts().index[0]),
 })
 wrong = per_run[(per_run["physics rules"] != per_run["condition"]) | (per_run[f"{mn} | {fs}"] != per_run["condition"])]
 wrong
@@ -233,7 +233,7 @@ wrong
 empty = w["run_id"].isin(["F2-020", "F4-020", "F4-030"])
 sens = []
 for name, p in [("physics residual rules", phys_pred), (f"{mn} | {fs} (loro)", p_best),
-                ("lecture tree", tree_pred)]:
+                ("expert tree", tree_pred)]:
     sens.append({"method": name, "macro F1, all windows": dg.score(y, p)["macro_f1"],
                  "macro F1, without the 3 empty settings": dg.score(y[~empty], p[~empty])["macro_f1"]})
 pd.DataFrame(sens)

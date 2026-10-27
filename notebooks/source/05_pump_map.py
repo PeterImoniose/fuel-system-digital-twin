@@ -1,13 +1,12 @@
 # %% [markdown]
-# # 05 - Task 4: the Oberdorfer N999R pump, datasheet versus tests, and a pump model
+# # 05 - The N999R gear pump: datasheet versus tests, and a pump model
 #
-# **Brief:** *contextualisation of pump test data against the OEM (Oberdorfer N999R) datasheet and
-# construction of a pump surface map / pump model.* The Pump Datasets Specification adds three
-# questions, answered in sections 2-4:
+# The pump sets the whole system's flow, so it gets its own model. Questions:
 #
-# * quantify where each test stopped (the valve end point) and comment on it;
-# * explain why flow collapses above 600 rpm in the initial campaign but not in the final one;
-# * build the model from the final (latest) campaign.
+# * Does the pump still perform to its datasheet?
+# * Where did each test stop, and why does flow collapse above 600 rpm in the 2021 campaign but not
+#   in 2023?
+# * Which model of flow from speed and pressure holds up on data it was not fitted to?
 #
 # Data: 16 tests from the initial campaign (2021-07-28, 400-1140 rpm) and 6 from the final campaign
 # (2023-02-02, 700-950 rpm). In each test the pump runs at a fixed speed while the two main-line valves
@@ -136,11 +135,10 @@ plt.show()
 #   (a spring relief valve "cracks" gradually). Below 650 rpm the pressure barely reaches the setting,
 #   so no clear bend appears.
 # * The flow lost at the end of the test **grows with speed**, from about 0.1 L/min at 700 rpm to
-#   0.9 L/min at 1140 rpm, exactly the brief's "the higher the pump speed, the higher the drop". With the
+#   0.9 L/min at 1140 rpm, exactly as the test notes describe ("the higher the pump speed, the higher the drop"). With the
 #   pressure capped by the relief valve, a faster pump has more surplus flow to recirculate.
-# * Bardakis (2019) found the same knee at about 3.4 bar on this testbed and attributed it to the
-#   built-in relief valve. **The final campaign avoids it by stopping the valves earlier**, so its data
-#   describes the pump alone, which is why the brief asks for the model to be built from it.
+# * **The final campaign avoids the relief valve by stopping the valves earlier**, so its data
+#   describes the pump alone. That is why the pump model is built from it.
 #
 # ## 4. The pump against its datasheet
 #
@@ -193,8 +191,7 @@ for dpv in (1.0, 2.0, 3.0):
 
 # %% [markdown]
 # * **At 1140 rpm the tested pump matches its datasheet within 0-2.3 %** across the whole pressure
-#   range below the relief valve (Bardakis, 2019, reported it "slightly better" than the datasheet in
-#   2019; by 2021 it sits on it). The datasheet is a good model of this pump at the one speed it covers.
+#   range below the relief valve. The datasheet is a good model of this pump at the one speed it covers.
 # * **Displacement is about 2.08-2.13 mL/rev from 600 rpm upwards** in both campaigns, as the
 #   positive-displacement principle requires, and close to the 2.11 mL/rev implied by the OEM 1140 rpm
 #   line. It dips to about 2.0 mL/rev at 400 rpm, where the straight-line extrapolation to zero
@@ -219,8 +216,8 @@ for dpv in (1.0, 2.0, 3.0):
 #
 # Training data: the six final-campaign tests below 3.3 bar. Three ways of testing them:
 # 1. **leave one speed out** within the final campaign (can the model fill in a speed it never saw?);
-# 2. the **24 independent verification points** in the module notes (Oberdorfer N999R Gear Pump.pdf,
-#    Table 1: speeds 777-915 rpm, different valve combinations, measured separately);
+# 2. the **24 independent verification points** in the rig's pump documentation (speeds 777-915 rpm,
+#    different valve combinations, measured separately);
 # 3. **other conditions**: the initial campaign (other year, 400-1140 rpm, below the relief bend), the
 #    OEM 1140 rpm line, and the 2014 rig's healthy point.
 
@@ -256,7 +253,7 @@ ver = pd.DataFrame([
     columns=["dpv3_pct", "dpv4_pct", "rpm", "dP", "Q_measured", "Q_module_model"])
 ver.to_csv(config.TABLE_DIR / "05_verification_points.csv", index=False)
 models = {m.name: m.fit(train["rpm"], train["dP_pump"], train["Q"]) for m in pm.default_models()}
-vrows = [{"model": "module's MATLAB lookup (as published)", **pm.metrics(ver["Q_measured"], ver["Q_module_model"])}]
+vrows = [{"model": "reference MATLAB lookup (as published)", **pm.metrics(ver["Q_measured"], ver["Q_module_model"])}]
 for name, m in models.items():
     vrows.append({"model": name, **pm.metrics(ver["Q_measured"], m.predict(ver["rpm"], ver["dP"]))})
 vtab = pd.DataFrame(vrows)
@@ -283,7 +280,7 @@ ax.plot(lims, lims, color=pl.AXIS, lw=1)
 ax.fill_between(lims, [l * 0.985 for l in lims], [l * 1.015 for l in lims], color=pl.GRID, lw=0)
 ax.text(1.55, 1.55 * 0.985 - 0.012, "+/- 1.5 %", fontsize=8, color=pl.MUTED, ha="right")
 phys = models["physics (D, k_s)"]
-ax.scatter(ver["Q_measured"], ver["Q_module_model"], marker="s", s=30, color=pl.INK_2, label="module's lookup model")
+ax.scatter(ver["Q_measured"], ver["Q_module_model"], marker="s", s=30, color=pl.INK_2, label="reference lookup model")
 ax.scatter(ver["Q_measured"], phys.predict(ver["rpm"], ver["dP"]), marker="o", s=30, color=pl.SERIES[0],
            label="physics model (D, k_s), this work")
 ax.set_xlim(lims)
@@ -437,7 +434,7 @@ pd.DataFrame({"pump pressure (bar)": dp, "flow (L/min)": q, "hydraulic power (W)
 # drive power becomes heat in the water. That is the mechanism behind the temperature drift seen
 # through the day in the 2014 data, and another reason a twin of this system needs fluid temperature.
 #
-# ## Summary for Task 4
+# ## Summary
 #
 # * The tested N999R matches its datasheet at 1140 rpm within 0-2.3 %; displacement is about
 #   2.1 mL/rev across the speed range (2.0 at 400 rpm).
@@ -448,6 +445,6 @@ pd.DataFrame({"pump pressure (bar)": dp, "flow (L/min)": q, "hydraulic power (W)
 #   campaign predicts held-out speeds to about 1 %; more flexible forms are slightly better on the
 #   training day, and the lookup table cannot extrapolate at all.
 # * Shifts between test days dominate the real-world error: about +3.5 % on the 24 independent
-#   verification points (for every model, including the module's own, whose published error figures are
-#   mis-computed) and about +0.1 L/min against the 2021 campaign. They live in the slip coefficient, not
+#   verification points (for every model, including the reference lookup model, whose published error
+#   figures are mis-computed) and about +0.1 L/min against the 2021 campaign. They live in the slip coefficient, not
 #   the displacement, so the twin should keep D fixed and re-estimate k_s on the asset.

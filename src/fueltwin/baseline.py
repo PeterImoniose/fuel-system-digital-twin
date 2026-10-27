@@ -1,4 +1,4 @@
-"""Healthy-condition baseline (Task 2).
+"""Healthy-condition baseline.
 
 The healthy reference is built from window means, not from raw 1 kHz samples.
 Raw samples mostly measure sensor noise and pump ripple; a fault shifts the
@@ -10,7 +10,7 @@ variation are kept apart:
 
 Only six healthy runs exist, all within five minutes of each other, so the
 between-run term certainly underestimates day-scale variation. That limitation
-is measured later (Task 3) and is the main reason the twin needs drift checks.
+is measured in notebook 03 and is the main reason the twin needs drift checks.
 """
 
 from __future__ import annotations

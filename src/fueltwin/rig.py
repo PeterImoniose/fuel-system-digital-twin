@@ -1,4 +1,4 @@
-"""Loading the 2014 fuel-system rig recordings (Tasks 2 and 3).
+"""Loading the 2014 fuel-system rig recordings.
 
 Each file is 60 s at 1 kHz with one fixed fault setting. Column meaning comes
 from ``File format.pdf``; sensor positions come from the Lab 1 schematic:

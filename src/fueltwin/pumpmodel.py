@@ -1,4 +1,4 @@
-"""Models of the Oberdorfer N999R external gear pump (Task 4).
+"""Models of the Oberdorfer N999R external gear pump.
 
 Three model families are compared, all mapping (speed, pressure rise) -> flow:
 
@@ -8,7 +8,7 @@ Three model families are compared, all mapping (speed, pressure rise) -> flow:
   Two or three numbers, each with a physical meaning, so it extrapolates.
 * ``PolyPump``: full quadratic polynomial in (dP, n), the usual curve fit.
 * ``LookupPump``: binned 2-D lookup table with linear interpolation, the same
-  idea as the module's MATLAB Curve Fitting / Simulink 2-D lookup model. It
+  idea as a MATLAB Curve Fitting / Simulink 2-D lookup model. It
   returns NaN outside the tested envelope.
 """
 

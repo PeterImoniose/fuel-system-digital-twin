@@ -1,8 +1,5 @@
 # %% [markdown]
-# # 03 - Task 3: characterising the faulty conditions
-#
-# **Brief:** *analysis and characterisation of the faulty conditions that could potentially affect the
-# system in service.*
+# # 03 - Fault characterisation: what does each fault do to the system?
 #
 # Five faults were emulated at increasing severity (41 recordings):
 #
@@ -69,7 +66,7 @@ plt.show()
 # * **Clogged filter (F1)** is the only fault that drives the pump suction pressure P2 sharply down
 #   (to 0.35 bar abs at 80 %) while P1 rises slightly: the pump pulls harder against a blocked inlet.
 #   Downstream pressures fall only modestly, so the system keeps working until the filter is badly
-#   blocked, the "tricky, easy to miss" behaviour Bardakis (2019) describes.
+#   blocked: an easy fault to miss if only flow is watched.
 # * **Stuck valve (F3) and clogged injector (F5)** are both blockages downstream of the pump: P3 rises
 #   and flow falls. They differ only at P4, the sensor between them: P4 falls for F3 (the restriction is
 #   upstream of it) and rises for F5 (downstream of it).
@@ -80,9 +77,9 @@ plt.show()
 # * Above about 60 % travel the pump-bypass and leak curves flatten: once the bypass valve is wide open,
 #   further travel adds little.
 #
-# ## 2. Signatures compared with the lecture's expectation
+# ## 2. Signatures compared with the expert reference table
 #
-# The lecture's diagnostic table (Diagnostic Trees, page 2) predicts an arrow for every fault and
+# The rig comes with an expert diagnostic table that predicts an arrow for every fault and
 # sensor. Below, the direction measured in this data at low and high severity, with matches marked.
 
 # %%
@@ -100,23 +97,23 @@ for f in FAULTS:
                      **{m: ("+" if s > 0 else "-" if s < 0 else "0") + (" ok" if s == e else (" x" if s != 0 else " ~"))
                         for m, s, e in zip(MEAS, sign, EXPECTED[f])}})
 sig = pd.DataFrame(rows).set_index(["fault", "level"])
-sig.to_csv(config.TABLE_DIR / "03_signature_vs_lecture.csv")
+sig.to_csv(config.TABLE_DIR / "03_signature_vs_reference.csv")
 sig
 
 # %% [markdown]
-# `+`/`-` = measured direction beyond the healthy envelope, `0` = inside it; `ok` = matches the lecture
+# `+`/`-` = measured direction beyond the healthy envelope, `0` = inside it; `ok` = matches the reference
 # table, `x` = opposite direction, `~` = no measurable change where one was expected.
 #
-# The lecture table holds for the strong signals but differs in the details, and those details are
+# The reference table holds for the strong signals but differs in the details, and those details are
 # physical, not noise:
 #
-# * **P1 falls at low severity for F1 and F5** although the lecture expects it to rise. P1 is an
+# * **P1 falls at low severity for F1 and F5** although the reference expects it to rise. P1 is an
 #   absolute pressure that also tracks the main-tank level, which kept falling through the day
 #   (notebook 02), so at small severities the level change outweighs the fault.
-# * **At 20 % the clogged injector (F5) lowers P3 and P4** where the lecture expects both to rise. F5
+# * **At 20 % the clogged injector (F5) lowers P3 and P4** where the reference expects both to rise. F5
 #   was recorded last (15:43-16:11); by then the pump delivered less than in the morning (section 6),
 #   and that drift outweighs the small restriction. By 80 % the expected rise is clear.
-# * Several "small variation" arrows of the lecture are inside the healthy envelope at mild severity
+# * Several "small variation" arrows of the reference are inside the healthy envelope at mild severity
 #   (marked `~`).
 #
 # ## 3. When does each fault become visible?
@@ -179,7 +176,7 @@ plt.show()
 # * **Filter path**: F3 and F5 lie on the healthy curve; F1 climbs steeply; **F2 and F4 also climb**,
 #   because the pump draws extra flow through the filter to feed the bypass or the leak.
 #
-# That pattern is enough to separate all five faults, which the lecture tree cannot (its F1/F2/F4
+# That pattern is enough to separate all five faults, which the expert tree cannot (its F1/F2/F4
 # ambiguity group). It is turned into four residuals: one per section, plus a pump residual that
 # measures how much of the pump's output never reaches the meter. Every law is fitted on windows where
 # that section is known to be healthy, and when a fault is scored **all of its own recordings are left
@@ -247,7 +244,7 @@ plt.show()
 # ## 5. Degradation paths on the pump map
 #
 # The pump decides the system's operating point, so plotting every recording on the pump's
-# pressure-flow plane shows each fault as a path (Bardakis, 2019, used the same view).
+# pressure-flow plane shows each fault as a path.
 
 # %%
 pc = pump.load_campaign("initial")
@@ -280,15 +277,15 @@ plt.show()
 
 # %% [markdown]
 # * **Blockages (F1, F3, F5)** push the pump to a higher pressure and lower flow **along its own curve**:
-#   the pump is healthy, the system is harder to push through. This is exactly the behaviour Bardakis
-#   (2019) reports for downstream blockages, extended here to the suction-side filter.
+#   the pump is healthy, the system is harder to push through. This holds for the downstream blockages
+#   and, here, for the suction-side filter too.
 #   The F5 path runs parallel to F1 and F3 but about 0.03 L/min lower: F5 was recorded last, after the
 #   pump curve had shifted down (section 6).
 # * **Lost-delivery faults (F2, F4)** move the point **below the pump curve**: lower pressure *and* lower
 #   flow, because part of what the pump delivers leaves before the meter.
 # * The 2014 pump line (fitted on 2014 data where the pump was known healthy) is noticeably **steeper**
 #   than the 2021 test at the same speed (about -0.43 against -0.26 L/min per bar): more internal
-#   leakage in 2014. Notebook 05 builds the pump model from the 2023 campaign as the brief requires; this
+#   leakage in 2014. Notebook 05 builds the pump model from the 2023 campaign; this
 #   comparison is why the twin re-identifies the pump curve on the asset it monitors.
 #
 # ## 6. The afternoon effect: drift that looks like a fault
@@ -349,8 +346,7 @@ plt.show()
 #
 # The most likely cause is the water warming up as the rig ran: lower viscosity increases internal
 # slip in a gear pump (less flow at a given pressure) and changes the damping of the pressure ripple.
-# Bardakis (2019) observed exactly this sensitivity on the later rig and only tested at thermal
-# equilibrium for that reason. Temperature was never measured here, so the cause cannot be confirmed;
+# The later version of the rig was only tested at thermal equilibrium for this reason. Temperature was never measured here, so the cause cannot be confirmed;
 # what can be said is that **a change of a few percent in pump delivery is within normal operation of this rig over
 # a day**, and that is the same size as the mildest pump and leak faults.
 #
@@ -358,17 +354,17 @@ plt.show()
 # residual of the twin must allow for this drift (its limit is calibrated across the day); and a digital
 # twin of this rig needs a fluid-temperature input (notebook 06).
 #
-# ## 7. Does the lecture's diagnostic tree work on this data?
+# ## 7. Does the expert diagnostic tree work on this data?
 #
-# Diagnostic Trees page 9 decides with P3 (up or down), then P4, then fixed P3 bands (1.10-1.15 bar ->
+# The rig's expert diagnostic tree decides with P3 (up or down), then P4, then fixed P3 bands (1.10-1.15 bar ->
 # FM2, 1.15-1.20 bar -> FM1). Applied here with the healthy envelope deciding "up" and "down":
 
 # %%
-tree = dg.tutor_tree(w, base.mean, base.sd_total)
+tree = dg.expert_tree(w, base.mean, base.sd_total)
 tt = (pd.DataFrame({"condition": w["condition"], "severity": w["severity"], "tree": tree})
       .groupby(["condition", "severity"])["tree"].agg(lambda s: s.value_counts().index[0]).unstack(0))
 tt = tt[[c for c in config.CONDITIONS if c in tt]]
-tt.to_csv(config.TABLE_DIR / "03_lecture_tree_results.csv")
+tt.to_csv(config.TABLE_DIR / "03_expert_tree_results.csv")
 tt.fillna("")
 
 # %% [markdown]
@@ -421,10 +417,10 @@ plt.show()
 # * The bypass and leak valves are **dead below about 30-35 %** and then open quickly; at full travel more
 #   than half of the pump's delivery never reaches the end of the line.
 #
-# ## Summary for Task 3
+# ## Summary
 #
 # * Each fault has a recognisable signature, but raw pressures leave filter, pump and leak faults
-#   ambiguous (as in the lecture tree). Section pressure-drop residuals, built from the rig layout and
+#   ambiguous (as in the expert tree). Section pressure-drop residuals, built from the rig layout and
 #   fitted without the fault being scored, separate all five.
 # * Blockages move the operating point along the pump curve; lost-delivery faults move it below.
 # * Three settings (F2 20 %, F4 20 % and 30 %) produce no physical change and should not be counted as

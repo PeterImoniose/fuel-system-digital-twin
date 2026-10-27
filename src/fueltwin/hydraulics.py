@@ -1,4 +1,4 @@
-"""Physics-informed health indicators for the fuel rig (Tasks 3 and 5).
+"""Physics-informed health indicators for the fuel rig.
 
 Each pipe section obeys a pressure-flow law dP = k * Q^n while its component
 is healthy. Comparing the measured drop with the law gives a residual that is
@@ -24,7 +24,7 @@ makes every fault's pattern different:
                                                 valve, lost before the meter)
     F5        0        0       0        +      (nozzle resistance up)
 
-The tutor's diagnostic tree leaves F1/F2/F4 as one ambiguity group because it
+The rig's expert diagnostic tree leaves F1/F2/F4 as one ambiguity group because it
 reads raw pressures; the residuals separate them.
 
 Calibration rule (no peeking): a section law is fitted only on windows where

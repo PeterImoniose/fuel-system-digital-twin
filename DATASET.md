@@ -1,29 +1,28 @@
 # Data card
 
-The raw data comes from the coursework resource pack of the Digital Twins module (MMH126833,
-MSc Applied Data Science in Engineering, Glasgow Caledonian University). It is **not redistributed**
-in this repository. The code reads it in place from a folder called `Digital twin` next to the
-repository, or from the path in the `FUELTWIN_DATA` environment variable.
+The data comes from a laboratory fuel-system testbed at Glasgow Caledonian University, shared with
+its documentation (file formats, rig schematic, pump datasheet). It is **not redistributed** in this
+repository. The code reads it in place from a folder called `Digital twin` next to the repository, or
+from the path in the `FUELTWIN_DATA` environment variable.
 
 ```
 Digital twin/
-  Task 2 & 3/   File format.pdf, Diagnostic Trees.pdf, Lab 1 - DT 2022_2023.pdf, dissertation,
-                one folder of .lvm recordings per condition
-  Task 4/       Pump Datasets Specification.pdf, N999R datasheets, two campaign folders of .lvm files
+  Task 2 & 3/   rig recordings: one folder of .lvm files per condition, plus file-format notes
+  Task 4/       pump test campaigns: two folders of .lvm files, plus the N999R datasheet
 ```
 
-## 1. Fuel-system recordings (Tasks 2 and 3)
+## 1. Fuel-system recordings
 
 | Item | Value |
 |---|---|
-| Rig | UAV fuel-system demonstrator (Lab 1 schematic; Niculita, Skaf and Jennions, 2014) |
+| Rig | UAV fuel-system demonstrator (laboratory testbed) |
 | Date | 30 May 2014, 09:58-16:11 |
 | Recordings | 47: 6 healthy, 8 clogged filter, 9 degraded pump, 8 stuck valve, 8 leaking pipe, 8 clogged injector |
 | Length | 60 s each, 60 000 samples at 1 kHz |
 | Pump speed | 400 rpm (397.6-405.0) |
 | Format | LabVIEW Measurement (.lvm), tab separated, 23-line header |
 
-Channels (File format.pdf; sensor positions from the Lab 1 schematic):
+Channels (from the rig's file-format notes; sensor positions from the rig schematic):
 
 | Col | Used as | Meaning | Reference |
 |---|---|---|---|
@@ -53,7 +52,7 @@ valve travel from the healthy position, read from the file.
   per-channel block.
 * F2 at 20 % and F4 at 20-30 % produce no measurable hydraulic change (valve dead band).
 
-## 2. Pump test campaigns (Task 4)
+## 2. Pump test campaigns
 
 | Item | Initial campaign | Final campaign |
 |---|---|---|
@@ -69,5 +68,5 @@ not measurements; the `F1_model` column is the rig software's own model and is n
 
 ## 3. Licence and use
 
-Teaching material of Glasgow Caledonian University, used here for a personal portfolio analysis.
-Obtain the data through the module if you want to reproduce the results.
+The data belongs to Glasgow Caledonian University and is used here for a personal portfolio
+analysis. It is not included in this repository.

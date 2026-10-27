@@ -1,8 +1,8 @@
 # %% [markdown]
 # # 07 - Regression models: the pump surface done properly, virtual sensors and severity
 #
-# The submitted coursework built a second-order polynomial for pump flow from pressure rise and speed
-# and reported R^2 = 0.997 and RMSE = 0.010 L/min. Those figures came from a shuffled split of
+# The earlier version of this project fitted a second-order polynomial for pump flow from pressure
+# rise and speed and reported R^2 = 0.997 and RMSE = 0.010 L/min. Those figures came from a shuffled split of
 # 200 ms samples, where every test point has near-identical neighbours in the training set. This notebook
 # takes that idea and asks the questions a model going into a digital twin has to answer:
 #
@@ -42,7 +42,7 @@ w = features.load_windows(1.0)
 # %% [markdown]
 # ## 1. Choosing the polynomial degree
 #
-# Each degree from 1 to 5 is fitted to the final campaign. "Training fit" is what the coursework
+# Each degree from 1 to 5 is fitted to the final campaign. "Training fit" is what the earlier version
 # reported; "held-out speed" fits five speeds and predicts the sixth, in turn.
 
 # %%
@@ -86,7 +86,7 @@ plt.show()
 # to support it). On the 2021 campaign, which runs from 400 to 1140 rpm, degrees 3-5 are **more than
 # twice as wrong** as degrees 1-2 (0.21 against 0.08-0.09 L/min): their extra curvature extrapolates
 # badly outside the 700-950 rpm training range, on top of the day-to-day shift every model carries.
-# **Degree 2, as submitted, is the better compromise; the reported R^2 just did not measure what the
+# **Degree 2, as in the earlier version, is the better compromise; the reported R^2 just did not measure what the
 # model would do in use.**
 #
 # ## 2. Machine-learning regressors for the pump
@@ -162,7 +162,7 @@ plt.show()
 #
 # ## 3. How sure is the pump model? Intervals for alarm limits
 #
-# The coursework set the alarm at +/- 0.03 L/min, or 3 sd of healthy residuals. The hybrid model gives
+# The earlier version set the alarm at +/- 0.03 L/min, or 3 sd of healthy residuals. The hybrid model gives
 # an interval for every prediction instead. The question is whether it holds.
 
 # %%
@@ -330,7 +330,7 @@ plt.show()
 #
 # | Question | Answer |
 # |---|---|
-# | Best polynomial degree for the pump | 3 on held-out speeds, but 3-5 extrapolate badly to other speeds; degree 2 (as submitted) is the better compromise. Training R^2 cannot tell |
+# | Best polynomial degree for the pump | 3 on held-out speeds, but 3-5 extrapolate badly to other speeds; degree 2 (as in the earlier version) is the better compromise. Training R^2 cannot tell |
 # | Best pump regressor | degree 2-3 polynomials and physics + GP are equally accurate between speeds; the hybrid adds intervals and extrapolates like physics |
 # | ML regressors without physics | trees cannot predict an unseen speed; the neural network is unstable at the edges |
 # | Alarm limits | model interval plus a day-to-day term; a fixed +/- 0.03 L/min is narrower than the day-to-day shift |

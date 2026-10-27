@@ -114,7 +114,7 @@ def test_network_model_physics():
 DATA_PRESENT = (config.RIG_DIR / config.HEALTHY_FOLDER).exists()
 
 
-@pytest.mark.skipif(not DATA_PRESENT, reason="raw coursework data not available")
+@pytest.mark.skipif(not DATA_PRESENT, reason="raw rig data not available")
 def test_real_catalogue():
     from fueltwin import rig
     cat = rig.catalogue()
@@ -125,7 +125,7 @@ def test_real_catalogue():
     assert cat["start"].is_monotonic_increasing
 
 
-@pytest.mark.skipif(not DATA_PRESENT, reason="raw coursework data not available")
+@pytest.mark.skipif(not DATA_PRESENT, reason="raw rig data not available")
 def test_real_pump_files():
     df = pump.load_all()
     summary = pump.test_summary(df)

@@ -3,8 +3,7 @@
 * Healthy-only anomaly detectors (no fault labels at all).
 * Change detection on a stream: Hotelling T^2 against a reference window,
   followed by a CUSUM or by Bayesian online change-point detection
-  (Adams and MacKay, 2007), the method family Niculita, Skaf and Jennions
-  (2014) applied to this rig.
+  (Gaussian model with unknown mean and variance).
 * Kalman tracking of health indicators: each indicator is a random walk
   observed with noise; the filter gives a smoothed estimate with an
   uncertainty band, and grows its uncertainty over gaps between recordings.
